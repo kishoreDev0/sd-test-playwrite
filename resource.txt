@@ -1,0 +1,2 @@
+For api testing = https://jsonplaceholder.typicode.com/
+For ui testing  = https://practice.expandtesting.com/

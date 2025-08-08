@@ -1,0 +1,17 @@
+[
+  {
+    "name": "valid credentials",
+    "username": "practice",
+    "password": "SuperSecretPassword!",
+    "expectedMessage": "You logged into a secure area!",
+    "shouldPass": true
+  },
+  {
+    "name": "invalid credentials",
+    "username": "wrongUser",
+    "password": "SuperSecretPasswords!",
+    "expectedMessage": "Your password is invalid!",
+    "shouldPass": false
+  }
+ 
+]
