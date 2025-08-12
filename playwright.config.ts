@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  timeout: 30_000,
   fullyParallel: true,
   testIgnore: ['tests-examples/**'],  
   forbidOnly: !!process.env.CI,
@@ -10,7 +11,18 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
+    headless: process.env.HEADLESS !== 'false',
+    viewport: { width: 1280, height: 800 },
+    actionTimeout: 10_000,
+    navigationTimeout: 15_000,
+    screenshot: 'only-on-failure',
+    video: !!process.env.CI ? 'retain-on-failure' : 'on',
     trace: 'on-first-retry',
+    baseURL: process.env.BASE_URL || 'https://example.com',
+    // Attach environment info to results
+    launchOptions: {
+      args: process.env.PW_LAUNCH_ARGS ? process.env.PW_LAUNCH_ARGS.split(' ') : []
+    },
   },
 
   projects: [
