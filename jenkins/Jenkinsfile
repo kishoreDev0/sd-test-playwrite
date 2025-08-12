@@ -1,0 +1,61 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE = "playwright-ci:${env.BUILD_NUMBER}"
+    RESULTS_DIR = "results"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        script {
+          sh "docker build -f docker/Dockerfile -t ${env.IMAGE} ."
+        }
+      }
+    }
+
+    stage('Run Tests') {
+      steps {
+        sh "rm -rf ${RESULTS_DIR} || true && mkdir -p ${RESULTS_DIR}"
+        sh """
+          docker run --rm \
+            -e CI=true \
+            -e ALLURE_RESULTS_DIR=/usr/src/app/results/allure-results \
+            -e PW_OUTPUT_DIR=/usr/src/app/results/test-output \
+            -v $PWD/${RESULTS_DIR}:/usr/src/app/results \
+            ${env.IMAGE}
+        """
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: "${RESULTS_DIR}/**", fingerprint: true
+        }
+      }
+    }
+
+    stage('Generate Allure HTML') {
+      steps {
+        sh """
+          docker run --rm -v $PWD/${RESULTS_DIR}:/usr/src/app/results ${env.IMAGE} bash -lc "allure generate /usr/src/app/results/allure-results -o /usr/src/app/results/allure-report || true"
+        """
+        archiveArtifacts artifacts: "${RESULTS_DIR}/allure-report/**", fingerprint: true
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Finished. Artifacts archived at ${RESULTS_DIR}"
+    }
+    failure {
+      echo "Build failed — check artifacts and Allure report for more info."
+    }
+  }
+}

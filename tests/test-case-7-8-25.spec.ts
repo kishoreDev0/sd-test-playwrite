@@ -22,12 +22,12 @@ test.describe('Public API Tests', () => {
   });
 
   test('POST /posts - create and verify new post', async () => {
+    
     const postData = {
       title: 'Playwright API Test',
       body: 'This is a test post',
       userId: 1
     };
-
     const response = await client.post('/posts', postData);
     expect(response.status()).toBe(201); 
     const post = await response.json();

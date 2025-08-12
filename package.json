@@ -2,13 +2,23 @@
   "name": "sd-test-playwrite",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "private": true,
+
+  "scripts": {
+    "test": "playwright test",
+    "ci:test": "playwright test --reporter=list --workers=2 --output=/usr/src/app/results/test-output", 
+    "allure:generate": "allure generate results/allure-results --clean -o results/allure-report || true",
+    "allure:open": "allure open results/allure-report",
+    "clean:results": "rm -rf results/* && mkdir -p results/allure-results"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@playwright/test": "^1.54.2",
-    "@types/node": "^24.1.0"
+    "@playwright/test": "^1.36.0",
+    "allure-playwright": "^2.0.0",
+    "axios": "^1.4.0",
+    "typescript": "^5.0.0"
   }
 }
